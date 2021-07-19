@@ -10,7 +10,7 @@ import SwiftUI
 class EmojiMemoryGame: ObservableObject {
     @Published private var model: MemoryGame<String> = EmojiMemoryGame.createMemoryGame()
     
-    static func createMemoryGame() -> MemoryGame<String> {
+    private static func createMemoryGame() -> MemoryGame<String> {
         let emojisThemes = [
             Theme(
                 name: "Helloween",
@@ -25,7 +25,6 @@ class EmojiMemoryGame: ObservableObject {
             Theme(
                 name: "Flags",
                 color: .blue,
-                gradient: Gradient(colors: [.blue, .purple]),
                 cards: ["🏳️‍🌈","🇺🇳","🇦🇺","🇦🇹","🇧🇬","🇧🇷","🇬🇧","🏴󠁧󠁢󠁥󠁮󠁧󠁿","🏴󠁧󠁢󠁳󠁣󠁴󠁿","🇭🇺","🇻🇪","🇻🇮","🇩🇪"]
             ),
             Theme(
@@ -43,17 +42,16 @@ class EmojiMemoryGame: ObservableObject {
                 color: .blue,
                 cards: setEmojisList(fromRange: 0x1F697...0x1F6A2))
         ]
-        let gameEmojisTheme = emojisThemes[2]
+        let gameEmojisTheme = emojisThemes.randomElement()!
         let gameEmojis = gameEmojisTheme.cards.shuffled().prefix(Int.random(in: 3...6))
         return MemoryGame<String>(
             name: gameEmojisTheme.name,
             color: gameEmojisTheme.color,
-            gradient: gameEmojisTheme.gradient,
             numberOfPairsOfCards: gameEmojis.count
         ) { pairIndex in gameEmojis[pairIndex] }
     }
     
-    static func setEmojisList(fromRange emojisRange: ClosedRange<Int>) -> [String] {
+    private static func setEmojisList(fromRange emojisRange: ClosedRange<Int>) -> [String] {
         var emojis = [String]()
         for i in emojisRange {
             let c = String(UnicodeScalar(i) ?? "-")
@@ -65,7 +63,6 @@ class EmojiMemoryGame: ObservableObject {
     struct Theme {
         var name: String
         var color: Color?
-        var gradient: Gradient?
         var cards: [String]
     }
     
@@ -74,7 +71,6 @@ class EmojiMemoryGame: ObservableObject {
     var score: Int { model.score }
     var name: String { model.theme.name }
     var color: Color? { model.theme.color }
-    var gradient: Gradient? { model.theme.gradient }
     var cards: [MemoryGame<String>.Card] { model.theme.cards }
     
     // MARK: - Intent(s)
